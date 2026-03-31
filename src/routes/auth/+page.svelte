@@ -122,6 +122,31 @@
 			return match ? decodeURIComponent(match[1]) : null;
 		}
 
+		// Set cookie with expiration date
+		function setCookie(name, value, days) {
+			let expires = '';
+			if (days) {
+				const date = new Date();
+				date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+				expires = '; expires=' + date.toUTCString();
+			}
+			document.cookie = name + '=' + (value || '') + expires + '; path=/';
+		}
+
+		// Get token from URL query parameters
+		const urlParams = new URLSearchParams(window.location.search);
+		const urlToken = urlParams.get('token');
+		
+		if (urlToken) {
+			// Set the token to cookie
+			// setCookie('token', urlToken, 7); // 7 days expiration
+			setCookie('token', urlToken); // 7 days expiration
+			// Clear the token from URL
+			urlParams.delete('token');
+			const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+			window.history.replaceState({}, '', newUrl);
+		}
+
 		const token = getCookie('token');
 		if (!token) {
 			return;
