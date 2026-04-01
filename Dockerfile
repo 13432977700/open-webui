@@ -27,6 +27,10 @@ ARG GID=0
 FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
 ARG BUILD_HASH
 
+# 关闭严格的 Svelte 语法检查，允许混用 on:click
+ENV VITE_DISABLE_SVELTE_A11Y_WARNINGS=true
+ENV SVELTE_STRICT=false
+
 # Set Node.js options (heap limit Allocation failed - JavaScript heap out of memory)
 # ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV NODE_OPTIONS="--max-old-space-size=6144"
