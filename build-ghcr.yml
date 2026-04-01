@@ -35,6 +35,6 @@ jobs:
           push: true
           tags: |
             ghcr.io/13432977700/open-webui:latest
-            ghcr.io/13432977700/open-webui:main
+            ghcr.io/13432977700/open-webui:v0.8.121
           cache-from: type=gha
           cache-to: type=gha,mode=max
