@@ -37,10 +37,8 @@ jobs:
         with:
           images: ghcr.io/13432977700/open-webui
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,format=short
             type=raw,value=latest
+            type=sha,format=short,prefix=
 
       # 构建并推送（自动使用上面生成的所有标签）
       - name: Build and push Docker image
