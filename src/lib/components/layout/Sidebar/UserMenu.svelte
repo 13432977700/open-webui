@@ -133,7 +133,7 @@
 							src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
 							class=" size-10 object-cover rounded-full"
 							alt="profile"
-							onerror={(e) => {
+							on:error={(e) => {
 								e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ccc"%3E%3Ccircle cx="12" cy="8" r="4"%3E%3C/circle%3E%3Cpath d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"%3E%3C/path%3E%3C/svg%3E';
 							}}
 						/>
