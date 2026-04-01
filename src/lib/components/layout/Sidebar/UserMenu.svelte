@@ -67,6 +67,47 @@
 			getUsageInfo();
 		}
 	};
+
+	function detectFrameEnvironment() {
+    const result = {
+        isInIframe: false,
+        isCrossOrigin: false,
+        confidence: 'high',
+        reason: '',
+        frameElement: null
+    };
+    
+    try {
+        // 主要检测方法
+        result.isInIframe = window.self !== window.top;
+        result.reason = result.isInIframe ? 'self !== top' : 'self === top';
+        
+        // 辅助验证
+        result.frameElement = window.frameElement;
+        if (result.frameElement) {
+            result.isInIframe = true;
+            result.reason = 'frameElement exists';
+        }
+        
+    } catch (e) {
+        // 跨域情况
+        result.isInIframe = true;
+        result.isCrossOrigin = true;
+        result.reason = 'Cross-origin security error';
+    }
+    
+    // 置信度评估
+    if (result.isCrossOrigin) {
+        result.confidence = 'very high';
+    } else if (result.frameElement) {
+        result.confidence = 'high';
+    }
+    
+    return result;
+	}
+	const {
+		isInIframe,
+	} = detectFrameEnvironment();
 </script>
 
 <ShortcutsModal bind:show={$showShortcuts} />
@@ -92,6 +133,9 @@
 							src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
 							class=" size-10 object-cover rounded-full"
 							alt="profile"
+							onerror={(e) => {
+								e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ccc"%3E%3Ccircle cx="12" cy="8" r="4"%3E%3C/circle%3E%3Cpath d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"%3E%3C/path%3E%3C/svg%3E';
+							}}
 						/>
 					</div>
 
@@ -194,6 +238,7 @@
 				<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1.5 p-0" />
 			{/if}
 
+			{#if !isInIframe}
 			<button
 				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
 				type="button"
@@ -213,6 +258,7 @@
 				</div>
 				<div class=" self-center truncate">{$i18n.t('Settings')}</div>
 			</button>
+			{/if}
 
 			<button
 				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
@@ -345,6 +391,7 @@
 
 			<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1 p-0" />
 
+			{#if !isInIframe}
 			<button
 				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
 				type="button"
@@ -362,6 +409,7 @@
 				</div>
 				<div class=" self-center truncate">{$i18n.t('Sign Out')}</div>
 			</button>
+			{/if}
 
 			{#if showActiveUsers && ($config?.features?.enable_public_active_users_count || role === 'admin') && usage}
 				{#if usage?.user_count}

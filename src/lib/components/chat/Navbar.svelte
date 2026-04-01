@@ -59,6 +59,47 @@
 
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
+
+	function detectFrameEnvironment() {
+    const result = {
+        isInIframe: false,
+        isCrossOrigin: false,
+        confidence: 'high',
+        reason: '',
+        frameElement: null
+    };
+    
+    try {
+        // 主要检测方法
+        result.isInIframe = window.self !== window.top;
+        result.reason = result.isInIframe ? 'self !== top' : 'self === top';
+        
+        // 辅助验证
+        result.frameElement = window.frameElement;
+        if (result.frameElement) {
+            result.isInIframe = true;
+            result.reason = 'frameElement exists';
+        }
+        
+    } catch (e) {
+        // 跨域情况
+        result.isInIframe = true;
+        result.isCrossOrigin = true;
+        result.reason = 'Cross-origin security error';
+    }
+    
+    // 置信度评估
+    if (result.isCrossOrigin) {
+        result.confidence = 'very high';
+    } else if (result.frameElement) {
+        result.confidence = 'high';
+    }
+    
+    return result;
+	}
+	const {
+		isInIframe,
+	} = detectFrameEnvironment();
 </script>
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
@@ -212,7 +253,7 @@
 						</Menu>
 					{/if}
 
-					{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
+					{#if ($user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)) && !isInIframe}
 						<Tooltip content={$i18n.t('Controls')}>
 							<button
 								class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
@@ -249,6 +290,9 @@
 										class="size-6 object-cover rounded-full"
 										alt=""
 										draggable="false"
+										onerror={(e) => {
+											e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ccc"%3E%3Ccircle cx="12" cy="8" r="4"%3E%3C/circle%3E%3Cpath d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"%3E%3C/path%3E%3C/svg%3E';
+										}}
 									/>
 								</div>
 							</div>
