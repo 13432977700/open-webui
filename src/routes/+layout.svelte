@@ -772,6 +772,28 @@
 	};
 
 	onMount(async () => {
+
+		function setCookie(name, value, days) {
+			let expires = '';
+			if (days) {
+				const date = new Date();
+				date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+				expires = '; expires=' + date.toUTCString();
+			}
+			document.cookie = name + '=' + (value || '') + expires + '; path=/';
+		}
+
+		const urlParams = new URLSearchParams(window.location.search);
+		const urlToken = urlParams.get('token');
+		
+		if (urlToken) {
+			setCookie('token', urlToken);
+			localStorage.token = urlToken;
+			urlParams.delete('token');
+			const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+			window.history.replaceState({}, '', newUrl);
+		}
+
 		window.addEventListener('message', windowMessageEventHandler);
 
 		let touchstartY = 0;
