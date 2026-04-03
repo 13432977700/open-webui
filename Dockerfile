@@ -84,6 +84,7 @@ ENV OLLAMA_BASE_URL="/ollama" \
 ## API Key and Security Config ##
 ENV OPENAI_API_KEY="" \
     WEBUI_SECRET_KEY="" \
+    ENABLE_API_KEYS="True" \
     SCARF_NO_ANALYTICS=true \
     DO_NOT_TRACK=true \
     ANONYMIZED_TELEMETRY=false
