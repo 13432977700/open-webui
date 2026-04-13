@@ -630,7 +630,7 @@ jobs:
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},prefix=,suffix=,value=cuda
           flavor: |
             latest=${{ github.ref == 'refs/heads/main' }}
-            suffix=-cuda,onlatest=true
+            suffix=,onlatest=true
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
