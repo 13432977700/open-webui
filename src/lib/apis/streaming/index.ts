@@ -52,14 +52,20 @@ async function* openAIStreamToIterator(
 		if (!value) {
 			continue;
 		}
-		let data = value.data;
-		
-		// Handle iframe and CORS issues: strip 'data: ' prefix if present
-		// This can happen when the response is treated as plain text instead of SSE
-		if (data.startsWith('data: ')) {
-			data = data.substring(6);
-		} else if (data.startsWith('data:')) {
-			data = data.substring(5);
+		let data = value.data ?? '';
+
+		// Be tolerant of environments (proxies/iframes/CORS) that may deliver SSE as plain text.
+		// - Allow leading whitespace/newlines/BOM
+		// - Allow multi-line payloads where each line starts with `data:`
+		data = data.replace(/^\uFEFF/, '').trim();
+		if (data.includes('\n')) {
+			data = data
+				.split('\n')
+				.map((line) => line.replace(/^\s*data:\s?/, ''))
+				.join('\n')
+				.trim();
+		} else {
+			data = data.replace(/^\s*data:\s?/, '');
 		}
 		
 		if (data.startsWith('[DONE]')) {
@@ -69,7 +75,6 @@ async function* openAIStreamToIterator(
 
 		try {
 			const parsedData = JSON.parse(data);
-			console.log(parsedData);
 
 			if (parsedData.error) {
 				yield { done: true, value: '', error: parsedData.error };
