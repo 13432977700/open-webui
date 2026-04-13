@@ -3,6 +3,7 @@
 
 	export let className = 'size-8';
 	export let src = `${WEBUI_BASE_URL}/static/favicon.png`;
+	export let errorUrl = ``;
 </script>
 
 <img
@@ -18,4 +19,9 @@
 	class=" {className} object-cover rounded-full"
 	alt="profile"
 	draggable="false"
+	on:error={(e) => {
+		if (errorUrl) {
+			e.target.src = errorUrl
+		}
+	}}
 />
