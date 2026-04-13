@@ -75,7 +75,16 @@ def set_xframe(value: str):
     pattern = r'^(DENY|SAMEORIGIN)$'
     match = re.match(pattern, value, re.IGNORECASE)
     if not match:
-        value = 'DENY'
+        # Default to SAMEORIGIN to allow iframe embedding from same origin
+        value = 'SAMEORIGIN'
+    
+    # If using Content-Security-Policy with frame-ancestors, skip X-Frame-Options
+    # to avoid conflicts (modern browsers prefer CSP)
+    csp_value = os.environ.get('CONTENT_SECURITY_POLICY', None)
+    if csp_value and 'frame-ancestors' in csp_value:
+        # Don't set X-Frame-Options when CSP frame-ancestors is configured
+        return {}
+    
     return {'X-Frame-Options': value}
 
 

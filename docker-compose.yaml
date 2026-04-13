@@ -24,6 +24,9 @@ services:
       - 'OLLAMA_BASE_URL=http://ollama:11434'
       - 'WEBUI_SECRET_KEY='
       - 'ENABLE_API_KEYS=True'
+      - XFRAME_OPTIONS=SAMEORIGIN
+      - CONTENT_SECURITY_POLICY=frame-ancestors 'self' https://scm.bluestarsolutions.net
+      - CORS_ALLOW_ORIGIN=https://scm.bluestarsolutions.net
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped

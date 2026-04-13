@@ -52,7 +52,16 @@ async function* openAIStreamToIterator(
 		if (!value) {
 			continue;
 		}
-		const data = value.data;
+		let data = value.data;
+		
+		// Handle iframe and CORS issues: strip 'data: ' prefix if present
+		// This can happen when the response is treated as plain text instead of SSE
+		if (data.startsWith('data: ')) {
+			data = data.substring(6);
+		} else if (data.startsWith('data:')) {
+			data = data.substring(5);
+		}
+		
 		if (data.startsWith('[DONE]')) {
 			yield { done: true, value: '' };
 			break;
@@ -88,6 +97,7 @@ async function* openAIStreamToIterator(
 			};
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
+			console.error('Raw data:', data);
 		}
 	}
 }
