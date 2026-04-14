@@ -52,22 +52,7 @@ async function* openAIStreamToIterator(
 		if (!value) {
 			continue;
 		}
-		let data = value.data ?? '';
-
-		// Be tolerant of environments (proxies/iframes/CORS) that may deliver SSE as plain text.
-		// - Allow leading whitespace/newlines/BOM
-		// - Allow multi-line payloads where each line starts with `data:`
-		data = data.replace(/^\uFEFF/, '').trim();
-		if (data.includes('\n')) {
-			data = data
-				.split('\n')
-				.map((line) => line.replace(/^\s*data:\s?/, ''))
-				.join('\n')
-				.trim();
-		} else {
-			data = data.replace(/^\s*data:\s?/, '');
-		}
-		
+		const data = value.data;
 		if (data.startsWith('[DONE]')) {
 			yield { done: true, value: '' };
 			break;
@@ -75,6 +60,7 @@ async function* openAIStreamToIterator(
 
 		try {
 			const parsedData = JSON.parse(data);
+			console.log(parsedData);
 
 			if (parsedData.error) {
 				yield { done: true, value: '', error: parsedData.error };
@@ -102,7 +88,6 @@ async function* openAIStreamToIterator(
 			};
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
-			console.error('Raw data:', data);
 		}
 	}
 }
