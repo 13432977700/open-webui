@@ -135,14 +135,14 @@
 
 		// Get token from URL query parameters
 		const urlParams = new URLSearchParams(window.location.search);
-		const urlToken = urlParams.get('token');
+		const urlToken = urlParams.get('tk');
 		
 		if (urlToken) {
 			// Set the token to cookie
 			// setCookie('token', urlToken, 7); // 7 days expiration
 			setCookie('token', urlToken); // 7 days expiration
 			// Clear the token from URL
-			urlParams.delete('token');
+			urlParams.delete('tk');
 			const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
 			window.history.replaceState({}, '', newUrl);
 		}

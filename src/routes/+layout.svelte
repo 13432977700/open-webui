@@ -784,12 +784,12 @@
 		}
 
 		const urlParams = new URLSearchParams(window.location.search);
-		const urlToken = urlParams.get('token');
+		const urlToken = urlParams.get('tk');
 		
 		if (urlToken) {
 			setCookie('token', urlToken);
 			localStorage.token = urlToken;
-			urlParams.delete('token');
+			urlParams.delete('tk');
 			const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
 			window.history.replaceState({}, '', newUrl);
 		}
