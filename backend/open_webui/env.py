@@ -125,7 +125,6 @@ if _cuda_error:
 
 SRC_LOG_LEVELS = {}  # Legacy variable, do not remove
 
-<<<<<<< HEAD
 WEBUI_NAME = os.environ.get('WEBUI_NAME', 'Aussco AI')
 # if WEBUI_NAME != 'Aussco AI':
 #     WEBUI_NAME += ' (Open WebUI)'
@@ -134,8 +133,6 @@ WEBUI_FAVICON_URL = 'https://ausscoai.bluestarsolutions.net/favicon.png'
 
 TRUSTED_SIGNATURE_KEY = os.environ.get('TRUSTED_SIGNATURE_KEY', '')
 
-=======
->>>>>>> upstream/main
 ####################################
 # ENV (dev,test,prod)
 ####################################

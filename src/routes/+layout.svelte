@@ -953,7 +953,6 @@
 	};
 
 	onMount(async () => {
-<<<<<<< HEAD
 
 		function setCookie(name, value, days) {
 			let expires = '';
@@ -975,7 +974,6 @@
 			const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
 			window.history.replaceState({}, '', newUrl);
 		}
-=======
 		const originalFetch = window.fetch.bind(window);
 		window.fetch = async (input, init) => {
 			const response = await originalFetch(input, init);
@@ -991,7 +989,6 @@
 
 			return response;
 		};
->>>>>>> upstream/main
 
 		window.addEventListener('message', windowMessageEventHandler);
 
