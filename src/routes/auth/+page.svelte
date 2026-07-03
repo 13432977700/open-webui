@@ -25,9 +25,18 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
-	import { redirect } from '@sveltejs/kit';
 
 	const i18n = getContext('i18n');
+
+	// 修改日期: 2026-07-03 — 避免登录后 redirect 回 /auth 造成无限跳转
+	const resolvePostAuthRedirect = (redirectParam: string | null) => {
+		const candidate = redirectParam || localStorage.getItem('redirectPath') || '/';
+		// Avoid redirect loops back to the login page
+		if (!candidate || candidate.startsWith('/auth')) {
+			return '/';
+		}
+		return candidate;
+	};
 
 	let loaded = false;
 
@@ -60,7 +69,8 @@
 			}
 
 			if (!redirectPath) {
-				redirectPath = $page.url.searchParams.get('redirect') || '/';
+				// 修改日期: 2026-07-03
+				redirectPath = resolvePostAuthRedirect($page.url.searchParams.get('redirect'));
 			}
 
 			goto(redirectPath);
@@ -191,21 +201,27 @@
 	}
 
 	onMount(async () => {
+		// 修改日期: 2026-07-03 — 仅在 $user 有效时跳转；OAuth 完成后再判断，避免与 (app) 布局循环
 		const redirectPath = $page.url.searchParams.get('redirect');
-		if ($user !== undefined) {
-			goto(redirectPath || '/');
-		} else {
-			if (redirectPath) {
-				localStorage.setItem('redirectPath', redirectPath);
-			}
-		}
 
 		const error = $page.url.searchParams.get('error');
 		if (error) {
 			toast.error(error);
 		}
 
+		// `undefined` = session still resolving; `null` = logged out — both should stay on /auth
+		if (!$user && redirectPath) {
+			localStorage.setItem('redirectPath', redirectPath);
+		}
+
 		await oauthCallbackHandler();
+
+		if ($user) {
+			goto(resolvePostAuthRedirect(redirectPath));
+			localStorage.removeItem('redirectPath');
+			return;
+		}
+
 		form = $page.url.searchParams.get('form');
 
 		// Auto-redirect to SSO when OAUTH_AUTO_REDIRECT is enabled and the
