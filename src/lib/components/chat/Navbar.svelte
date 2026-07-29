@@ -65,6 +65,47 @@
 
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
+
+	function detectFrameEnvironment() {
+    const result = {
+        isInIframe: false,
+        isCrossOrigin: false,
+        confidence: 'high',
+        reason: '',
+        frameElement: null
+    };
+    
+    try {
+        // 主要检测方法
+        result.isInIframe = window.self !== window.top;
+        result.reason = result.isInIframe ? 'self !== top' : 'self === top';
+        
+        // 辅助验证
+        result.frameElement = window.frameElement;
+        if (result.frameElement) {
+            result.isInIframe = true;
+            result.reason = 'frameElement exists';
+        }
+        
+    } catch (e) {
+        // 跨域情况
+        result.isInIframe = true;
+        result.isCrossOrigin = true;
+        result.reason = 'Cross-origin security error';
+    }
+    
+    // 置信度评估
+    if (result.isCrossOrigin) {
+        result.confidence = 'very high';
+    } else if (result.frameElement) {
+        result.confidence = 'high';
+    }
+    
+    return result;
+	}
+	const {
+		isInIframe,
+	} = detectFrameEnvironment();
 </script>
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
