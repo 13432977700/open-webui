@@ -3,7 +3,9 @@
 	import { safeImageUrl } from '$lib/utils/safeImageUrl';
 
 	export let className = 'size-8';
-	export let src = `${WEBUI_BASE_URL}/static/favicon.png`;
+	const FALLBACK_SRC = `${WEBUI_BASE_URL}/static/favicon.png`;
+
+	export let src = FALLBACK_SRC;
 	export let errorUrl = ``;
 </script>
 
@@ -15,7 +17,9 @@
 	draggable="false"
 	on:error={(e) => {
 		if (errorUrl) {
-			e.target.src = errorUrl
+			e.currentTarget.src = errorUrl;
+		} else if (!e.currentTarget.src.endsWith(FALLBACK_SRC)) {
+			e.currentTarget.src = FALLBACK_SRC;
 		}
 	}}
 />
